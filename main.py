@@ -1,3 +1,5 @@
+import argparse
+import time
 from typing import Dict
 
 def common_subsequence(a: str, b: str, weights: Dict[str, int]):
@@ -35,7 +37,32 @@ def common_subsequence(a: str, b: str, weights: Dict[str, int]):
 
     return optimal, tracker
 
-weights = {"a": 2, "b": 4, "c": 5}
+def parse_input(path):
+    with open(path, "r") as f:
+        alphabet_length = int(f.readline())
+        weights = dict()
+        for _ in range(alphabet_length):
+            line = f.readline()
+            key, value, *_ = line.split(" ")
+            value = int(value)
+            weights[key.strip()] = value
+        line_a = f.readline().strip()
+        line_b = f.readline().strip()
+    return line_a, line_b, weights
 
-optimal_value, optimal_sequence = common_subsequence("aacb", "caab", weights)
-print(optimal_value, optimal_sequence)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--time", action="store_true")
+    parser.add_argument("-m", "--multiplier", action="store", default=1)
+    parser.add_argument("path")
+
+    args = parser.parse_args()
+    multiplier = int(args.multiplier)
+    line_a, line_b, weights = parse_input(args.path)
+    before = time.time()
+    optimal_value, optimal_sequence = common_subsequence(line_a * multiplier, line_b * multiplier, weights)
+    after = time.time()
+    print(optimal_value)
+    print(optimal_sequence)
+    if args.time:
+        print(f"Time: {after - before} s")
